@@ -1,0 +1,87 @@
+import numpy as np
+import torch
+import torch.nn as nn
+import utils
+from . import L0_Utils
+
+def L0_Sigma_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start):
+    
+    model.eval()
+    
+    total_batches = len(dataLoader)
+    total_samples = len(dataLoader.dataset)
+    
+    # First pass: Collect all original examples and labels
+    x_tensor, y_tensor = utils.DataLoaderToTensor(dataLoader)
+    all_original_examples, all_labels = utils.TensorToNumpy(x_tensor, y_tensor)
+    
+    # Calculate sigma map once for all samples (efficiency improvement)
+    sigma = L0_Utils.sigma_map(all_original_examples)
+    
+    # Initialize adversarial examples and robust accuracy
+    all_adv_examples = np.copy(all_original_examples)
+    pgd_adv_acc = None
+    
+    # Outer loop: Multiple restarts
+    for counter in range(n_restarts):
+        if random_start and n_restarts > 1:
+            np.random.seed(42)
+        print(f"Restart {counter + 1}/{n_restarts}")
+        
+        if counter == 0:
+            # Get initial predictions on clean images
+            corr_pred = utils.get_predictions(model, all_original_examples, all_labels, device)
+            pgd_adv_acc = np.copy(corr_pred)
+        
+        # Inner loop: Process each batch in this restart
+        batch_start_idx = 0
+        for batch_idx, (x_batch, y_batch) in enumerate(dataLoader):
+            x_numpy, y_numpy = utils.TensorToNumpy(x_batch, y_batch)
+            batch_size = x_numpy.shape[0]
+            batch_end_idx = batch_start_idx + batch_size
+            
+            # Get the original samples and sigma for this batch
+            x_nat = all_original_examples[batch_start_idx:batch_end_idx]
+            y_nat = all_labels[batch_start_idx:batch_end_idx]
+            sigma_batch = sigma[batch_start_idx:batch_end_idx]
+            
+            # Perform attack on this batch
+            x_batch_adv, curr_pgd_adv_acc = L0_Utils.perturb_L0_sigma(
+                model, x_nat, y_nat, 
+                sparsity, num_steps, step_size, 
+                device, sigma_batch, kappa, random_start
+            )
+            
+            # Update robust accuracy: take minimum (worst case) across restarts
+            pgd_adv_acc[batch_start_idx:batch_end_idx] = np.minimum(
+                pgd_adv_acc[batch_start_idx:batch_end_idx], 
+                curr_pgd_adv_acc
+            )
+            
+            # Update adversarial examples for samples that were successfully attacked
+            mask = np.logical_not(curr_pgd_adv_acc)
+            all_adv_examples[batch_start_idx:batch_end_idx][mask] = x_batch_adv[mask]
+            
+            batch_start_idx = batch_end_idx
+    
+    # Calculate overall statistics
+    overall_robust_acc = np.sum(pgd_adv_acc) / total_samples * 100.0
+    
+    # Calculate pixels changed statistics
+    pixels_changed = np.sum(np.amax(np.abs(all_adv_examples - all_original_examples) > 1e-10, axis=-1), axis=(1,2))
+    
+    # Calculate maximum perturbation across all samples
+    max_perturbation = np.amax(np.abs(all_adv_examples - all_original_examples))
+    
+    # print('Pixels changed: ', pixels_changed)    # Uncomment it to print total pixel changes in each samples
+    print(f"{'='*70}")
+    print(f"Total samples processed: {total_samples}")
+    print(f"Overall Robust Accuracy at {sparsity} pixels: {overall_robust_acc:.2f}%")
+    print(f"Samples correctly classified after attack: {np.sum(pgd_adv_acc)}")
+    print(f"Maximum perturbation size: {max_perturbation:.5f}")
+    print(f"{'='*70}\n")
+
+    # Print per-class robust accuracy using the new function
+    utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)  # Uncomment to print classwise accuracy
+    
+    return None
