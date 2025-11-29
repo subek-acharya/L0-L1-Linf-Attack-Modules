@@ -58,10 +58,10 @@ L0_AttackWrapper/
 │   └── ResNet.py                # ResNet-20 architecture
 │
 ├── checkpoint/                   # Trained model weights
-│   └── ResNet20-trOnlyBubbles-valOnlyBubbles-Grayscale.pth
+│   └── Trained_model.pth
 │
 ├── data/                         # Dataset storage
-│   └── final_dataset_val_OnlyBubbles_Grayscale.pth
+│   └── Dataset.pth
 │
 ├── l0_attack/                    # Attack implementations
 │   ├── init.py
