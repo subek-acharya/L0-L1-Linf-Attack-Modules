@@ -88,7 +88,7 @@ L0_AttackWrapper/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/subek-acharya/L0_AttackWrapper.git
 cd L0_AttackWrapper
 ```
 
