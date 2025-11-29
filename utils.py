@@ -2,23 +2,6 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-# DLR Loss Function
-def dlr_loss(x, y):
-    # Sort logits in ascending order for each sample
-    x_sorted, ind_sorted = x.sort(dim=1)
-    
-    # Check if the highest logit corresponds to the true class
-    # ind = 1 if true class has highest logit, 0 otherwise
-    ind = (ind_sorted[:, -1] == y).float()
-    
-    # Create index array for batch samples
-    u = torch.arange(x.shape[0])
-
-    # Calculate DLR loss:
-    # - If true class has highest logit: difference with 2nd highest
-    # - If true class doesn't have highest logit: difference with highest
-    return -(x[u, y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind))
-
 #Convert a dataloader into x and y tensors 
 def DataLoaderToTensor(dataLoader):
     #First check how many samples in the dataset
@@ -59,7 +42,6 @@ def TensorToNumpy(x_tensor, y_tensor):
     y_numpy = y_numpy.astype(np.int64)
     
     return x_numpy, y_numpy
-
 
 def get_predictions(model, x_nat, y_nat, device):
     x = torch.from_numpy(x_nat).permute(0, 3, 1, 2).float().to(device)
@@ -204,23 +186,6 @@ def predictD(dataLoader, numClasses, model, device=None):
                 indexer = indexer + 1 #update the indexer regardless 
     return yPred
 
-#Class to help with converting between dataloader and pytorch tensor 
-class MyDataSet(torch.utils.data.Dataset):
-    def __init__(self, x_tensor, y_tensor, transforms=None):
-        self.x = x_tensor
-        self.y = y_tensor
-        self.transforms = transforms
-
-    def __getitem__(self, index):
-        if self.transforms is None: #No transform so return the data directly
-            return (self.x[index], self.y[index])
-        else: #Transform so apply it to the data before returning 
-            return (self.transforms(self.x[index]), self.y[index])
-
-    def __len__(self):
-        return len(self.x)
-
-
 def print_per_class_robust_accuracy(all_labels, all_robust_acc):
     unique_labels = np.unique(all_labels)
     
@@ -242,3 +207,36 @@ def print_per_class_robust_accuracy(all_labels, all_robust_acc):
         print(f"{'-'*70}")
     
     print(f"{'='*70}\n")
+
+# DLR Loss Function
+def dlr_loss(x, y):
+    # Sort logits in ascending order for each sample
+    x_sorted, ind_sorted = x.sort(dim=1)
+    
+    # Check if the highest logit corresponds to the true class
+    # ind = 1 if true class has highest logit, 0 otherwise
+    ind = (ind_sorted[:, -1] == y).float()
+    
+    # Create index array for batch samples
+    u = torch.arange(x.shape[0])
+
+    # Calculate DLR loss:
+    # - If true class has highest logit: difference with 2nd highest
+    # - If true class doesn't have highest logit: difference with highest
+    return -(x[u, y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind))
+
+#Class to help with converting between dataloader and pytorch tensor 
+class MyDataSet(torch.utils.data.Dataset):
+    def __init__(self, x_tensor, y_tensor, transforms=None):
+        self.x = x_tensor
+        self.y = y_tensor
+        self.transforms = transforms
+
+    def __getitem__(self, index):
+        if self.transforms is None: #No transform so return the data directly
+            return (self.x[index], self.y[index])
+        else: #Transform so apply it to the data before returning 
+            return (self.transforms(self.x[index]), self.y[index])
+
+    def __len__(self):
+        return len(self.x)
