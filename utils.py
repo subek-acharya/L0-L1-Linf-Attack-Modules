@@ -210,19 +210,9 @@ def print_per_class_robust_accuracy(all_labels, all_robust_acc):
 
 # DLR Loss Function
 def dlr_loss(x, y):
-    # Sort logits in ascending order for each sample
     x_sorted, ind_sorted = x.sort(dim=1)
-    
-    # Check if the highest logit corresponds to the true class
-    # ind = 1 if true class has highest logit, 0 otherwise
     ind = (ind_sorted[:, -1] == y).float()
-    
-    # Create index array for batch samples
     u = torch.arange(x.shape[0])
-
-    # Calculate DLR loss:
-    # - If true class has highest logit: difference with 2nd highest
-    # - If true class doesn't have highest logit: difference with highest
     return -(x[u, y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind))
 
 #Class to help with converting between dataloader and pytorch tensor 

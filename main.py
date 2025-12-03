@@ -4,7 +4,8 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 
 from model_architecture import ResNet
-import l0_attack
+import L0_attack
+import Linf_attack
 import utils
 import binary_search
 
@@ -62,21 +63,48 @@ def main():
 
     # Attack Paramaters
     n_restarts = 10
-    num_steps = 500
+    num_steps = 20
     step_size = 12
     sparsity=2000
     epsilon = 1
     kappa = 8
     random_start = True
+    epsilonStep = epsilon/num_steps
+    etaStart = 0.5 * epsilon 
+    clipMin = 0.0
+    clipMax = 1.0
 
+    ########################### Linf Attack!!! #################
+
+    # PGD attack with Cross Entropy Loss
+    # advLoader_ce = Linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="ce")
+    # advAcc_ce = utils.validateD(advLoader_ce, model, device)
+    # print(f"Adversarial Accuracy (PGD with CE Loss): {advAcc_ce:.4f}")
+    
+    # PGD attack with DLR Loss
+    # advLoader_dlr = Linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="dlr")
+    # advAcc_dlr = utils.validateD(advLoader_dlr, model, device)
+    # print(f"Adversarial Accuracy (PGD with DLR Loss): {advAcc_dlr:.4f}")
+
+    # APGD with Cross Entropy Loss
+    advLoader_apgd_ce = Linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="ce")
+    advAcc_apgd_ce = utils.validateD(advLoader_apgd_ce, model, device)
+    print(f"Adversarial Accuracy (APGD with CE Loss):  {advAcc_apgd_ce:.4f}")
+    
+    # APGD with DLR Loss
+    # advLoader_apgd_dlr = Linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="dlr")
+    # advAcc_apgd_dlr = utils.validateD(advLoader_apgd_dlr, model, device)
+    # print(f"Adversarial Accuracy (APGD with DLR Loss): {advAcc_apgd_dlr:.4f}")
+
+    ########################### LO Attack!!! ###################
     # print("L0_PGD: ")
-    # l0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
+    # L0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
 
     # print("L0_Linf: ")
-    # l0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
+    # L0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
 
-    print("L0_Sigma_PGD_AttackWrapper: ")
-    l0_attack.L0_Sigma_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start)
+    # print("L0_Sigma_PGD_AttackWrapper: ")
+    # L0_attack.L0_Sigma_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start)
 
     # Binary Search Parameters
     tau = 0.0  # Target robust accuracy threshold (0% means complete attack success)
