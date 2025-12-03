@@ -138,7 +138,7 @@ def AutoAttackPytorchMatGPU(device, xData, yData, model, epsilonMax, etaStart, n
     x = torch.zeros(3, batchSize, xShape[0], xShape[1], xShape[2]).to(device)
     x[0] = xData #Initalize the starting adversarial example as the clean example
     
-    # ✅ Setup loss function for tracking based on type
+    # Setup loss function for tracking based on type
     if loss_type == "ce":
         lossIndividual = torch.nn.CrossEntropyLoss(reduction='none')  # Per-sample losses
     elif loss_type == "dlr":
@@ -150,7 +150,7 @@ def AutoAttackPytorchMatGPU(device, xData, yData, model, epsilonMax, etaStart, n
     for k in range(0, numSteps):
         #First attack step handled slightly differently
         if k == 0:
-            # ✅ Get gradient using MEAN loss (shared direction for all samples)
+            # Get gradient using MEAN loss (shared direction for all samples)
             xKGrad = GetModelGradient(device, model, x[0], yK, loss_type)
             x[1] = x[0] + eta[0][:, None, None, None] * torch.sign(xKGrad)
             x[1] = torch.clamp(ProjectionOperation(x[1], x[0], epsilonMax), min=clipMin, max=clipMax)
@@ -160,7 +160,7 @@ def AutoAttackPytorchMatGPU(device, xData, yData, model, epsilonMax, etaStart, n
                 outputsOriginal = model(x[0].to(device))
                 outputs = model(x[1].to(device))
                 
-                # ✅ Store PER-SAMPLE losses for tracking (vector)
+                # Store PER-SAMPLE losses for tracking (vector)
                 f[0] = lossIndividual(outputsOriginal, yK).detach()  # Shape: [batchSize]
                 f[1] = lossIndividual(outputs, yK).detach()          # Shape: [batchSize]
                     
@@ -172,7 +172,7 @@ def AutoAttackPytorchMatGPU(device, xData, yData, model, epsilonMax, etaStart, n
                 
         #Not the first iteration of the attack
         else:
-            # ✅ Get gradient using MEAN loss (shared direction for all samples)
+            # Get gradient using MEAN loss (shared direction for all samples)
             xKGrad = GetModelGradient(device, model, x[1], yK, loss_type)
             
             #Compute zk
@@ -187,10 +187,10 @@ def AutoAttackPytorchMatGPU(device, xData, yData, model, epsilonMax, etaStart, n
             #Check which x is better
             with torch.no_grad():
                 outputs = model(x[2].to(device))
-                # ✅ Store PER-SAMPLE losses for tracking (vector)
+                # Store PER-SAMPLE losses for tracking (vector)
                 f[k + 1] = lossIndividual(outputs, yK).detach()  # Shape: [batchSize]
                 
-            # ✅ Make per-sample decisions based on individual losses
+            # Make per-sample decisions based on individual losses
             for b in range(0, batchSize):
                 #In the untargeted case we want the cost to increase
                 if f[k+1, b] >= fBest[b]: 
