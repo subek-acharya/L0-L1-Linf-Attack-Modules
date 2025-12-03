@@ -4,8 +4,8 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 
 from model_architecture import ResNet
-import L0_attack
-import Linf_attack
+import l0_attack
+import linf_attack
 import utils
 import binary_search
 
@@ -77,34 +77,34 @@ def main():
     ########################### Linf Attack!!! #################
 
     # PGD attack with Cross Entropy Loss
-    # advLoader_ce = Linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="ce")
+    # advLoader_ce = linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="ce")
     # advAcc_ce = utils.validateD(advLoader_ce, model, device)
     # print(f"Adversarial Accuracy (PGD with CE Loss): {advAcc_ce:.4f}")
     
     # PGD attack with DLR Loss
-    # advLoader_dlr = Linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="dlr")
+    # advLoader_dlr = linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="dlr")
     # advAcc_dlr = utils.validateD(advLoader_dlr, model, device)
     # print(f"Adversarial Accuracy (PGD with DLR Loss): {advAcc_dlr:.4f}")
 
     # APGD with Cross Entropy Loss
-    advLoader_apgd_ce = Linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="ce")
+    advLoader_apgd_ce = linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="ce")
     advAcc_apgd_ce = utils.validateD(advLoader_apgd_ce, model, device)
     print(f"Adversarial Accuracy (APGD with CE Loss):  {advAcc_apgd_ce:.4f}")
     
     # APGD with DLR Loss
-    # advLoader_apgd_dlr = Linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="dlr")
+    # advLoader_apgd_dlr = linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="dlr")
     # advAcc_apgd_dlr = utils.validateD(advLoader_apgd_dlr, model, device)
     # print(f"Adversarial Accuracy (APGD with DLR Loss): {advAcc_apgd_dlr:.4f}")
 
     ########################### LO Attack!!! ###################
     # print("L0_PGD: ")
-    # L0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
+    # l0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
 
     # print("L0_Linf: ")
-    # L0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
+    # l0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
 
     # print("L0_Sigma_PGD_AttackWrapper: ")
-    # L0_attack.L0_Sigma_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start)
+    # l0_attack.L0_Sigma_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start)
 
     # Binary Search Parameters
     tau = 0.0  # Target robust accuracy threshold (0% means complete attack success)

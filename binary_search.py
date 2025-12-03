@@ -1,5 +1,5 @@
 import numpy as np
-import L0_attack
+import l0_attack
 
 def binary_search_optimal_k(model, device, correctLoader, n_restarts, num_steps, step_size, epsilon, kappa, random_start, tau, k_min, k_max, tolerance, attack_name):
     current_k_min = k_min
