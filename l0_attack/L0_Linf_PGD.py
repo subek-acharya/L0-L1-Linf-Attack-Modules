@@ -8,6 +8,13 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
     
     model.eval()
     
+    if random_start and n_restarts > 1:
+            raise ValueError(
+            f"Invalid parameter combination: random_start={random_start} and n_restarts={n_restarts}. "
+            f"When using multiple restarts (n_restarts > 1), random_start should be False, "
+            f"or use n_restarts=1 with random_start=True."
+        )
+    
     total_batches = len(dataLoader)
     total_samples = len(dataLoader.dataset)
     
@@ -21,8 +28,6 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
     
     # Outer loop: Multiple restarts
     for counter in range(n_restarts):
-        if random_start and n_restarts > 1:
-            np.random.seed(42)
         print(f"Restart {counter + 1}/{n_restarts}")
         
         if counter == 0:
@@ -33,7 +38,7 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
         # Inner loop: Process each batch in this restart
         batch_start_idx = 0
         for batch_idx, (x_batch, y_batch) in enumerate(dataLoader):
-            x_numpy, y_numpy = TensorToNumpy(x_batch, y_batch)
+            x_numpy, y_numpy = utils.TensorToNumpy(x_batch, y_batch)
             batch_size = x_numpy.shape[0]
             batch_end_idx = batch_start_idx + batch_size
             
@@ -80,4 +85,10 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
     # Print per-class robust accuracy using the new function
     # utils.print_per_class_robust_accuracy(all_labels, all_robust_acc)    # Uncomment to print classwise accuracy
 
-    return None
+    # Convert numpy arrays back to tensors using NumpyToTensor
+    xAdv, yClean = utils.NumpyToTensor(all_adv_examples, all_labels)
+    
+    # Create and return adversarial dataLoader
+    advLoader = utils.TensorToDataLoader(xAdv, yClean, transforms=None, batchSize=dataLoader.batch_size, randomizer=None)
+     
+    return advLoader

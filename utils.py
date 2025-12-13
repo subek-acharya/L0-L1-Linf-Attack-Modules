@@ -43,6 +43,15 @@ def TensorToNumpy(x_tensor, y_tensor):
     
     return x_numpy, y_numpy
 
+def NumpyToTensor(x_numpy, y_numpy):
+    # NHWC -> NCHW (reverse of TensorToNumpy)
+    x_numpy = x_numpy.transpose(0, 3, 1, 2)
+    
+    x_tensor = torch.from_numpy(x_numpy).float()
+    y_tensor = torch.from_numpy(y_numpy).long()
+    
+    return x_tensor, y_tensor
+
 def get_predictions(model, x_nat, y_nat, device):
     x = torch.from_numpy(x_nat).permute(0, 3, 1, 2).float().to(device)
     y = torch.from_numpy(y_nat).to(device)

@@ -50,3 +50,6 @@ Thumbs.db
 
 # Logs
 *.log
+# Data Files
+data/*
+!data/.gitkeep

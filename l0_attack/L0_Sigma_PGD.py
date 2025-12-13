@@ -7,6 +7,13 @@ from . import L0_Utils
 def L0_Sigma_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start):
     
     model.eval()
+
+    if random_start and n_restarts > 1:
+            raise ValueError(
+            f"Invalid parameter combination: random_start={random_start} and n_restarts={n_restarts}. "
+            f"When using multiple restarts (n_restarts > 1), random_start should be False, "
+            f"or use n_restarts=1 with random_start=True."
+        )
     
     total_batches = len(dataLoader)
     total_samples = len(dataLoader.dataset)
@@ -24,8 +31,6 @@ def L0_Sigma_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps,
     
     # Outer loop: Multiple restarts
     for counter in range(n_restarts):
-        if random_start and n_restarts > 1:
-            np.random.seed(42)
         print(f"Restart {counter + 1}/{n_restarts}")
         
         if counter == 0:
@@ -82,6 +87,12 @@ def L0_Sigma_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps,
     print(f"{'='*70}\n")
 
     # Print per-class robust accuracy using the new function
-    utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)  # Uncomment to print classwise accuracy
+    # utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)  # Uncomment to print classwise accuracy
     
-    return None
+    # Convert numpy arrays back to tensors using NumpyToTensor
+    xAdv, yClean = utils.NumpyToTensor(all_adv_examples, all_labels)
+    
+    # Create and return adversarial dataLoader
+    advLoader = utils.TensorToDataLoader(xAdv, yClean, transforms=None, batchSize=dataLoader.batch_size, randomizer=None)
+     
+    return advLoader
