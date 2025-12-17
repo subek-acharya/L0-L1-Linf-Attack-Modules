@@ -20,6 +20,9 @@ def perturb_L0_box(model, x_nat, y_nat, lb, ub, sparsity, num_steps, step_size, 
       grad /= (1e-10 + np.sum(np.abs(grad), axis=(1,2,3), keepdims=True))
       x2 = np.add(x2, (np.random.random_sample(grad.shape)-0.5)*1e-12 + step_size * grad, casting='unsafe')
     x2 = x_nat + project_L0_box(x2 - x_nat, sparsity, lb, ub)
+
+  # Fill in failed cases with final x2
+  adv[adv_not_found.astype(bool)] = x2[adv_not_found.astype(bool)]    # ----> Added to return failed adversarial samples as well
     
   return adv, adv_not_found
 
