@@ -81,6 +81,9 @@ def perturb_L0_sigma(model, x_nat, y_nat, sparsity, num_steps, step_size, device
 
         x2 = project_L0_sigma(x2, sparsity, sigma, kappa, x_nat)
 
+    # Fill in failed cases with final x2
+    adv[adv_not_found.astype(bool)] = x2[adv_not_found.astype(bool)]    # Added to return failed adversarial samples as well
+
     return adv, adv_not_found
 
 def project_L0_sigma(y, k, sigma, kappa, x_nat):
