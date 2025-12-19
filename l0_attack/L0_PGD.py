@@ -87,7 +87,7 @@ def L0_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, step_
     # print('Pixels changed: ', pixels_changed)    # Uncomment it to print total pixel changes in each samples
     print(f"{'='*70}")
     print(f"Total samples processed: {total_samples}")
-    print(f"Overall Robust Accuracy at {sparsity} pixels:: {overall_robust_acc:.2f}%")
+    print(f"Overall Robust Accuracy at {sparsity} pixels: {overall_robust_acc:.2f}%")
     print(f"Maximum perturbation size: {max_perturbation:.5f}")
     print(f"{'='*70}\n")
 
