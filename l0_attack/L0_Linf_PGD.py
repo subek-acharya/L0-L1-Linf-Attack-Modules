@@ -24,6 +24,7 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
     
     # Initialize adversarial examples and robust accuracy
     all_adv_examples = np.copy(all_original_examples)
+    all_latest_attempts = np.copy(all_original_examples)  # ------> Added to save failed adv examples as well
     pgd_adv_acc = None
     
     # Outer loop: Multiple restarts
@@ -63,8 +64,15 @@ def L0_Linf_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps, 
             # Update adversarial examples for samples that were successfully attacked
             mask = np.logical_not(curr_pgd_adv_acc)
             all_adv_examples[batch_start_idx:batch_end_idx][mask] = x_batch_adv[mask]
+
+            # NEW: Always store latest attempt for ALL samples (will use for failed ones later)    ----> Added later to return failed adversarial
+            all_latest_attempts[batch_start_idx:batch_end_idx] = x_batch_adv
             
             batch_start_idx = batch_end_idx
+
+    # NEW: After all restarts, fill in failed samples with their latest attempts
+    still_robust = pgd_adv_acc.astype(bool)  # True where attack never succeeded
+    all_adv_examples[still_robust] = all_latest_attempts[still_robust]
     
     # Calculate overall statistics
     overall_robust_acc = np.sum(pgd_adv_acc) / total_samples * 100.0
