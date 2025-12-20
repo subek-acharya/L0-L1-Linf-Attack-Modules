@@ -5,7 +5,6 @@ import numpy as np
 
 from model_architecture import ResNet
 import l0_attack
-import linf_attack
 import utils
 import binary_search
 
