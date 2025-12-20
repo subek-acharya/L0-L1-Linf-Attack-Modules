@@ -22,10 +22,10 @@ ICCV 2019
 ## 📚 What is a White-Box Attack?
 
 A white-box adversarial attack assumes the attacker has **complete knowledge** of the target model:
-- ✓ Model architecture and parameters
-- ✓ Access to model gradients (via backpropagation)
-- ✓ Knowledge of loss functions and decision boundaries
-- ✓ Full transparency of the model's internal workings
+- Model architecture and parameters
+- Access to model gradients (via backpropagation)
+- Knowledge of loss functions and decision boundaries
+- Full transparency of the model's internal workings
 
 This is the strongest threat model and provides an upper bound on model vulnerability.
 
