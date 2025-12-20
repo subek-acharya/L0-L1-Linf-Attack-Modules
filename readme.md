@@ -17,8 +17,6 @@ ICCV 2019
 
 **Original Paper Implementation:** https://github.com/fra31/sparse-imperceivable-attacks
 
----
-
 ## 📚 What is a White-Box Attack?
 
 A white-box adversarial attack assumes the attacker has **complete knowledge** of the target model:
@@ -28,8 +26,6 @@ A white-box adversarial attack assumes the attacker has **complete knowledge** o
 - Full transparency of the model's internal workings
 
 This is the strongest threat model and provides an upper bound on model vulnerability.
-
----
 
 ## ⚔️ Attack Methods
 
