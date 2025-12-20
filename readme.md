@@ -1,12 +1,12 @@
-# L0/L1/Linf Attack Modules
+# L0 White-Box Adversarial Attack
 
-# L0 Sparse Adversarial Attack Framework
-
-A comprehensive PyTorch implementation for evaluating the robustness of deep learning models using L0-norm constrained adversarial attacks with sparse perturbations.
+A comprehensive PyTorch implementation for evaluating the robustness of deep learning models using L0-norm constrained white-box adversarial attacks with sparse perturbations.
 
 ## 🔍 Overview
 
-This project implements three variants of L0-norm adversarial attacks designed to evaluate model robustness under sparse pixel perturbations. The framework includes a binary search algorithm to automatically find the optimal sparsity level (minimum number of pixels to perturb) required to successfully fool a classifier.
+This project implements three variants of L0-norm white-box adversarial attacks designed to evaluate model robustness under sparse pixel perturbations. The framework includes a binary search algorithm to automatically find the optimal sparsity level (minimum number of pixels to perturb) required to successfully fool a classifier.
+
+**Attack Type:** White-Box (full access to model parameters, architecture, and gradients)
 
 This implementation is based on the paper:
 
@@ -17,6 +17,19 @@ ICCV 2019
 
 **Original Paper Implementation:** https://github.com/fra31/sparse-imperceivable-attacks
 
+---
+
+## 📚 What is a White-Box Attack?
+
+A white-box adversarial attack assumes the attacker has **complete knowledge** of the target model:
+- ✓ Model architecture and parameters
+- ✓ Access to model gradients (via backpropagation)
+- ✓ Knowledge of loss functions and decision boundaries
+- ✓ Full transparency of the model's internal workings
+
+This is the strongest threat model and provides an upper bound on model vulnerability.
+
+---
 
 ## ⚔️ Attack Methods
 
