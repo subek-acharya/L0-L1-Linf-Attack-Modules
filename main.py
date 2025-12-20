@@ -47,7 +47,7 @@ def main():
     print("Voter Dataset Clean Val Loader Acc:", cleanAcc)
 
     # Get correctly classified, classwise balanced samples to do the attack
-    totalSamplesRequired = 100
+    totalSamplesRequired = 1000
     correctLoader = utils.GetCorrectlyIdentifiedSamplesBalanced(model, totalSamplesRequired, valLoader, numClasses)
 
     # Check to make sure the accuracy is 100% on the correct loader
@@ -69,45 +69,19 @@ def main():
     epsilon = 1
     kappa = 8
     random_start = False
-    epsilonStep = epsilon/num_steps
-    etaStart = 0.5 * epsilon 
-    clipMin = 0.0
-    clipMax = 1.0
-
-    ########################### Linf Attack!!! #################
-
-    # PGD attack with Cross Entropy Loss
-    # advLoader_ce = linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="ce")
-    # advAcc_ce = utils.validateD(advLoader_ce, model, device)
-    # print(f"Adversarial Accuracy (PGD with CE Loss): {advAcc_ce:.4f}")
-    
-    # PGD attack with DLR Loss
-    # advLoader_dlr = linf_attack.PGDNativePytorch(device, correctLoader, model, epsilon, epsilonStep, num_steps, clipMin, clipMax, loss_type="dlr")
-    # advAcc_dlr = utils.validateD(advLoader_dlr, model, device)
-    # print(f"Adversarial Accuracy (PGD with DLR Loss): {advAcc_dlr:.4f}")
-
-    # APGD with Cross Entropy Loss
-    # advLoader_apgd_ce = linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="ce")
-    # advAcc_apgd_ce = utils.validateD(advLoader_apgd_ce, model, device)
-    # print(f"Adversarial Accuracy (APGD with CE Loss):  {advAcc_apgd_ce:.4f}")
-    
-    # APGD with DLR Loss
-    # advLoader_apgd_dlr = linf_attack.AutoAttackPytorchMatGPUWrapper(device, correctLoader, model, epsilon, etaStart, num_steps, clipMin=0, clipMax=1, loss_type="dlr")
-    # advAcc_apgd_dlr = utils.validateD(advLoader_apgd_dlr, model, device)
-    # print(f"Adversarial Accuracy (APGD with DLR Loss): {advAcc_apgd_dlr:.4f}")
 
     ########################### LO Attack!!! ###################
-    # print("L0_PGD: ")
-    # advLoader = l0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
-    # advAcc = utils.validateD(advLoader, model, device)
-    # print("L0_PGD_AttackWrapper: ", advAcc)
-
-    # print("L0_Linf: ")
-    advLoader = l0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
+    # L0_PGD_Attack
+    advLoader = l0_attack.L0_PGD_AttackWrapper(model, device, correctLoader, n_restarts,  num_steps, step_size, sparsity, random_start)
     advAcc = utils.validateD(advLoader, model, device)
-    print("L0_Linf_PGD_AttackWrapper: ", advAcc)
+    print("L0_PGD_AttackWrapper: ", advAcc)
 
-    # print("L0_Sigma_PGD: ")
+    # L0_Linf_PGD_Attack
+    # advLoader = l0_attack.L0_Linf_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, epsilon, random_start)
+    # advAcc = utils.validateD(advLoader, model, device)
+    # print("L0_Linf_PGD_AttackWrapper: ", advAcc)
+
+    # L0_Sigma_PGD_Attack
     # advLoader = l0_attack.L0_Sigma_PGD_AttackWrapper(model, device, correctLoader, n_restarts, num_steps, step_size, sparsity, kappa, random_start)
     # advAcc = utils.validateD(advLoader, model, device)
     # print("L0_Sigma_PGD_AttackWrapper: ", advAcc)
@@ -118,7 +92,7 @@ def main():
     k_max = 2000  # Maximum sparsity (maximum pixels to perturb)
     tolerance = 10  # Stop when range is smaller than this
     # Uncomment the attack name to run the desired attack wrapper
-    # attack_name = 'L0_PGD_AttackWrapper'
+    attack_name = 'L0_PGD_AttackWrapper'
     # attack_name = 'L0_Linf_PGD_AttackWrapper'
     # attack_name = 'L0_Sigma_PGD_AttackWrapper'
 
