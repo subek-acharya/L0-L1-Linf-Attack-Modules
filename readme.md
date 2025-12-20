@@ -99,7 +99,7 @@ L0_AttackWrapper/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/subek-acharya/L0_AttackWrapper.git
+git clone https://github.com/subek-acharya/L0-WhiteBox-Adversarial-Attack.git
 cd L0_AttackWrapper
 ```
 
