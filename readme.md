@@ -2,7 +2,7 @@
 
 A comprehensive PyTorch implementation for evaluating the robustness of deep learning models using L0-norm constrained white-box adversarial attacks with sparse perturbations.
 
-## 🔍 Overview
+## Overview
 
 This project implements three variants of L0-norm white-box adversarial attacks designed to evaluate model robustness under sparse pixel perturbations. The framework includes a binary search algorithm to automatically find the optimal sparsity level (minimum number of pixels to perturb) required to successfully fool a classifier.
 
@@ -17,7 +17,7 @@ ICCV 2019
 
 **Original Paper Implementation:** https://github.com/fra31/sparse-imperceivable-attacks
 
-## 📚 What is a White-Box Attack?
+## What is a White-Box Attack?
 
 A white-box adversarial attack assumes the attacker has **complete knowledge** of the target model:
 - Model architecture and parameters
@@ -27,7 +27,7 @@ A white-box adversarial attack assumes the attacker has **complete knowledge** o
 
 This is the strongest threat model and provides an upper bound on model vulnerability.
 
-## ⚔️ Attack Methods
+## Attack Methods
 
 ### 1. **L0_PGD (Basic L0 Sparse Attack)**
 The fundamental L0 attack that constrains perturbations to a fixed number of pixels (sparsity k). At each iteration:
@@ -60,7 +60,7 @@ Advanced variant using dynamic perturbation scaling with σ parameter:
 - `sparsity (k)`: Number of pixels to perturb
 - `kappa (κ)`: Scaling factor for perturbation intensity
 
-## 📁 Project Structure
+## Project Structure
 
 ```bash
 L0_AttackWrapper/
@@ -88,12 +88,7 @@ L0_AttackWrapper/
 └── README.md                     # This file
 ```
 
-## 🚀 Setup
-
-### Prerequisites
-- Python 3.8 or higher
-- CUDA-capable GPU (recommended)
-- 8GB+ RAM
+## Setup
 
 ### Installation
 
@@ -114,7 +109,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 🎮 Usage
+## Usage
 
 ### Running Individual Attacks
 
@@ -169,7 +164,7 @@ random_start = True   # Use random initialization
 utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)
 ```
 
-## 🔄 Configuring Loss Functions
+## Configuring Loss Functions
 
 The framework supports two loss functions. Switch between them in `utils.py`:
 ```bash
