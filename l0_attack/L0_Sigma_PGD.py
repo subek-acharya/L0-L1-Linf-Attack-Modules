@@ -95,7 +95,7 @@ def L0_Sigma_PGD_AttackWrapper(model, device, dataLoader, n_restarts, num_steps,
     print(f"{'='*70}\n")
 
     # Print per-class robust accuracy using the new function
-    # utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)  # Uncomment to print classwise accuracy
+    utils.print_per_class_robust_accuracy(all_labels, pgd_adv_acc)  # Uncomment to print classwise accuracy
     
     # Convert numpy arrays back to tensors using NumpyToTensor
     xAdv, yClean = utils.NumpyToTensor(all_adv_examples, all_labels)

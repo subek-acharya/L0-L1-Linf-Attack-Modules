@@ -10,7 +10,7 @@ import binary_search
 
 def main():
 
-    modelDir="./checkpoint/ResNet20-trOnlyBubbles-valOnlyBubbles-Grayscale.pth"
+    modelDir="./checkpoint/ModelResNet20-VotingOnlyBubbles-v2-Grayscale-Run1.th"
     
     # Parameters for the dataset
     batchSize = 64
@@ -32,7 +32,7 @@ def main():
     model= model.eval()
     
     # val_OnlyBubbles_Grayscale dataset
-    data = torch.load("./data/final_dataset_val_OnlyBubbles_Grayscale.pth", weights_only=False)
+    data = torch.load("./data/kaleel_final_dataset_val_OnlyBubbles_Grayscale.pth", weights_only=False)
     images = data["data"].float()
     labels_binary = data["binary_labels"].long()
     labels_original = data["original_labels"].long()
@@ -86,16 +86,17 @@ def main():
     # print("L0_Sigma_PGD_AttackWrapper: ", advAcc)
     
     # Binary Search Parameters
-    tau = 0.0  # Target robust accuracy threshold (0% means complete attack success)
-    k_min = 1  # Minimum sparsity (minimum pixels to perturb)
-    k_max = 2000  # Maximum sparsity (maximum pixels to perturb)
-    tolerance = 10  # Stop when range is smaller than this
-    # Uncomment the attack name to run the desired attack wrapper
+    # tau = 0.0  # Target robust accuracy threshold (0% means complete attack success)
+    # k_min = 1  # Minimum sparsity (minimum pixels to perturb)
+    # k_max = 2000  # Maximum sparsity (maximum pixels to perturb)
+    # tolerance = 10  # Stop when range is smaller than this
+    
+    # # Uncomment the attack name to run the desired attack wrapper
     attack_name = 'L0_PGD_AttackWrapper'
     # attack_name = 'L0_Linf_PGD_AttackWrapper'
     # attack_name = 'L0_Sigma_PGD_AttackWrapper'
 
-    # Uncomment to run biinary search to find the optimal sparsity value
+    # Uncomment to run binary search to find the optimal sparsity value
     # binary_search.binary_search_optimal_k(model, device, correctLoader, n_restarts, num_steps, step_size, epsilon, kappa, random_start, tau, k_min, k_max, tolerance, attack_name)
 
 

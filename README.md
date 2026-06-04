@@ -8,15 +8,6 @@ This project implements three variants of L0-norm white-box adversarial attacks 
 
 **Attack Type:** White-Box (full access to model parameters, architecture, and gradients)
 
-This implementation is based on the paper:
-
-[**"Sparse and Imperceivable Adversarial Attacks"**](https://arxiv.org/abs/1909.05040)  
-Francesco Croce, Matthias Hein  
-University of Tübingen  
-ICCV 2019
-
-**Original Paper Implementation:** https://github.com/fra31/sparse-imperceivable-attacks
-
 ## What is a White-Box Attack?
 
 A white-box adversarial attack assumes the attacker has **complete knowledge** of the target model:
@@ -180,7 +171,7 @@ with torch.enable_grad():
     loss = dlr_loss(output, y).mean()
 ```
 
-## 🔍 Finding Optimal Sparsity with Binary Search
+## Finding Optimal Sparsity with Binary Search
 
 The binary search algorithm automatically finds the minimum number of pixels needed to successfully attack the model.
 
@@ -212,3 +203,6 @@ attack_name = 'L0_PGD_AttackWrapper'
 binary_search.binary_search_optimal_k(model, device, correctLoader, n_restarts, num_steps, step_size, epsilon, kappa, random_start, tau, k_min, k_max, tolerance, attack_name)
 ```
 
+## References
+
+- [1] Croce, F., & Hein, M. (2019). [Sparse and Imperceivable Adversarial Attacks](https://arxiv.org/abs/1909.05040). *Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*.
